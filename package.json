@@ -1,10 +1,10 @@
 {
   "name": "redis-sharder",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Super simple redis sharding.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/istanbul test ./node_modules/.bin/_mocha -- -u tdd"
   },
   "author": "",
   "license": "MIT",
