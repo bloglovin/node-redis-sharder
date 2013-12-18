@@ -126,8 +126,14 @@ var methods = ['del','dump','exists','expire','expireat','keys','persist','pexpi
 _.map(methods, function (method) {
   Redis.prototype[method] = function (method) {
     return function () {
-      var key = this.hashKey(arguments[0]);
-      var server = this.connections[key];
+      var key = arguments[0];
+
+      if (typeof(key) === 'object') {
+        key = key[0];
+      }
+
+      var con_key = this.hashKey(key);
+      var server  = this.connections[con_key];
       server[method].apply(server, arguments);
     };
   }(method);

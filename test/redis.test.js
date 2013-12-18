@@ -43,6 +43,15 @@ suite('Redis tests', function () {
     done();
   });
 
+  test('array as arguments', function (done) {
+    var spy = sinon.spy(redis, 'hashKey');
+
+    redis.hget(['noKey','lolfield'], function (err, result) {
+      assert.equal(spy.calledWith('noKey'), true);
+      done();
+    });
+  });
+
   test('no config', function (done) {
     var redis_tmp = redis_obj();
     done();
