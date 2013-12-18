@@ -28,7 +28,7 @@ var Redis = function (config) {
   if (typeof(config.error_handler) === 'function') {
     this.onConnectionError = config.error_handler;
   } else {
-    this.onConnectionError = this._defaultConnectionErrorHandler;
+    this.onConnectionError = function (err, server) {};
   }
 
   this.total_weight = this._getTotalWeight(this.servers);
@@ -72,7 +72,7 @@ Redis.prototype.hashKey = function hashKey(key) {
     var server = this.servers[i];
 
     if (index < server.weight) {
-      return this.connections[i];
+      return i;
     } else {
       index -= server.weight;
     }
@@ -86,27 +86,24 @@ Redis.prototype.hashKey = function hashKey(key) {
 // * **server** object {host: 127.0.0.1, port: 6379, weight: 100}
 //
 Redis.prototype._openConnection = function (server, options) {
-  return redis_cli.createClient(
+  var self = this;
+  var con = redis_cli.createClient(
     server.port,
     server.host,
     options
   );
+
+  con.on('error', function (err) {
+    self.onConnectionError(err, server);
+  });
+
+  return con;
 };
 
 Redis.prototype._getTotalWeight = function (servers) {
   return _.reduce(servers, function (r, i) {
     return r + i.weight;
   }, 0);
-};
-
-Redis.prototype._connectionErrorHandler = function (connection, server) {
-  connection.on('error', function () {
-    this.onConnectionError(err, server);
-  });
-};
-
-Redis.prototype._defaultConnectionErrorHandler = function (err, server) {
-  console.log("Redis Error " + err, 'Server ' + server['host']);
 };
 
 //
@@ -129,7 +126,8 @@ var methods = ['del','dump','exists','expire','expireat','keys','persist','pexpi
 _.map(methods, function (method) {
   Redis.prototype[method] = function (method) {
     return function () {
-      var server = this.hashKey(arguments[0]);
+      var key = this.hashKey(arguments[0]);
+      var server = this.connections[key];
       server[method].apply(server, arguments);
     };
   }(method);
