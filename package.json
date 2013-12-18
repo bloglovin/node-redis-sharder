@@ -1,6 +1,6 @@
 {
   "name": "redis-sharder",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Super simple redis sharding.",
   "main": "index.js",
   "scripts": {
