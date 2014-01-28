@@ -111,17 +111,21 @@ Redis.prototype._getTotalWeight = function (servers) {
 //
 // Dynamically create prototype methods for the redis module API.
 //
-// Listed below are all the methods I could find that seemed safe to shard.
+// Listed below are all the methods I could find that seemed safe to
+// shard.
 //
-var methods = ['del','dump','exists','expire','expireat','keys','persist','pexpire',
-  'pttl','rename','renamenx','restore','sort','ttl','type','incrby','incrbyfloat',
-  'psetex','set','setbit','setex','setnx','setrange','strlen','hdel','hexists',
-  'hget','hgetall','hincrby','hincrbyfloat','hkeys','hlen','hset','hvals',
-  'hscan','lindex','linsert','llen','lpop','lpush','lpushx','lrange','lrem',
-  'lset','ltrim','rpop','rpush','rpushx','sadd','scard','sismember','smembers',
-  'spop','srandmember','srem','sscan','zadd','zcard','zcount','zincrby',
-  'zrange','zrangebyscore','zrank','zrem','zremrangebyrank','zremrangebyscore',
-  'zrevrange','zrevrangebyscore','zrevrank','zscore','zscan'];
+var methods = ['del','dump','exists','expire','expireat','get','getset',
+               'persist','pexpire','pttl','rename','renamenx','restore',
+               'sort','ttl','type','incrby','incrbyfloat','psetex','set',
+               'setbit','setex','setnx','setrange','strlen','hdel','hexists',
+               'hget','hgetall','hincrby','hincrbyfloat','hkeys','hlen','hset',
+               'hvals','hscan','lindex','linsert','llen','lpop','lpush',
+               'lpushx','lrange','lrem','lset','ltrim','rpop','rpush','rpushx',
+               'sadd','scard','sismember','smembers','spop','srandmember',
+               'srem','sscan','zadd','zcard','zcount','zincrby','zrange',
+               'zrangebyscore','zrank','zrem','zremrangebyrank',
+               'zremrangebyscore','zrevrange','zrevrangebyscore','zrevrank',
+               'zscore','zscan'];
 
 _.map(methods, function (method) {
   Redis.prototype[method] = function (method) {
