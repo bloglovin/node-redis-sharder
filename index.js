@@ -50,7 +50,7 @@ Redis.prototype.connect = function (servers, options) {
 
   _.map(servers, function (server) {
     connections.push(self._openConnection(server, options));
-  })
+  });
 
   return connections;
 };
@@ -146,3 +146,4 @@ _.map(methods, function (method) {
 module.exports = function (config) {
   return new Redis(config);
 };
+
