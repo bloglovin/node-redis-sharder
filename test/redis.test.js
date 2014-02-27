@@ -20,11 +20,15 @@ suite('Redis tests', function () {
     done();
   });
 
+  // This will cause output to console.error
   test('connection error handler, custom', function (done) {
     var redis_tmp = redis_obj({
       servers: [
         {host: '127.0.0.1', port: 6, weight: 100}
       ],
+      options: {
+        max_attempts: 1
+      },
       error_handler: function (err, server) {
         assert.equal(err.message, 'Redis connection to 127.0.0.1:6 failed - connect ECONNREFUSED');
         assert.deepEqual(server, {host: '127.0.0.1', port: 6, weight: 100});
