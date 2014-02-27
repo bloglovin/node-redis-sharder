@@ -52,9 +52,19 @@ inherit(Redis, EventEmitter);
 Redis.prototype.connect = function (servers, options) {
   var self = this;
   var connections = [];
+  var connected = 0;
 
   servers.map(function (server) {
-    connections.push(self._openConnection(server, options));
+    var connection = self._openConnection(server, options);
+    connections.push(connection);
+    return connection;
+  }).map(function (connection) {
+    connection.on('ready', function () {
+      connected++;
+      if (connected === connections.length) {
+        self.emit('ready');
+      }
+    });
   });
 
   return connections;

@@ -96,4 +96,10 @@ suite('Redis tests', function () {
 
     done();
   });
+
+  test('emits ready event when all connections have been established', function (done) {
+    var redis_tmp = redis_obj(config);
+    redis_tmp.on('ready', done);
+  });
 });
+
