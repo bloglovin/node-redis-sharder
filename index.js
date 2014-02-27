@@ -13,14 +13,18 @@
 // }
 //
 
-var _         = require('lodash');
-var redis_cli = require('redis');
-var crc32     = require('buffer-crc32');
+var _            = require('lodash');
+var redis_cli    = require('redis');
+var crc32        = require('buffer-crc32');
+var EventEmitter = require('events').EventEmitter;
+var inherit      = require('util').inherits;
 
 var Redis = function (config) {
   if (typeof(config) !== 'object') {
     config = {};
   }
+
+  EventEmitter.call(this);
 
   this.servers = config.servers || [{host: '127.0.0.1', port: 6379, weight: 1}];
   this.options = config.options || {};
@@ -34,6 +38,8 @@ var Redis = function (config) {
   this.total_weight = this._getTotalWeight(this.servers);
   this.connections = this.connect(this.servers, this.options);
 };
+
+inherit(Redis, EventEmitter);
 
 //
 // ## Connect
