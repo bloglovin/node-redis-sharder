@@ -13,14 +13,17 @@
 // }
 //
 
-var _         = require('lodash');
-var redis_cli = require('redis');
-var crc32     = require('buffer-crc32');
+var redis_cli    = require('redis');
+var crc32        = require('buffer-crc32');
+var EventEmitter = require('events').EventEmitter;
+var inherit      = require('util').inherits;
 
 var Redis = function (config) {
   if (typeof(config) !== 'object') {
     config = {};
   }
+
+  EventEmitter.call(this);
 
   this.servers = config.servers || [{host: '127.0.0.1', port: 6379, weight: 1}];
   this.options = config.options || {};
@@ -35,6 +38,8 @@ var Redis = function (config) {
   this.connections = this.connect(this.servers, this.options);
 };
 
+inherit(Redis, EventEmitter);
+
 //
 // ## Connect
 // Open up connections to all servers
@@ -47,10 +52,20 @@ var Redis = function (config) {
 Redis.prototype.connect = function (servers, options) {
   var self = this;
   var connections = [];
+  var connected = 0;
 
-  _.map(servers, function (server) {
-    connections.push(self._openConnection(server, options));
-  })
+  servers.map(function (server) {
+    var connection = self._openConnection(server, options);
+    connections.push(connection);
+    return connection;
+  }).map(function (connection) {
+    connection.on('ready', function () {
+      connected++;
+      if (connected === connections.length) {
+        self.emit('ready');
+      }
+    });
+  });
 
   return connections;
 };
@@ -101,7 +116,7 @@ Redis.prototype._openConnection = function (server, options) {
 };
 
 Redis.prototype._getTotalWeight = function (servers) {
-  return _.reduce(servers, function (r, i) {
+  return servers.reduce(function (r, i) {
     return r + i.weight;
   }, 0);
 };
@@ -127,7 +142,7 @@ var methods = ['del','dump','exists','expire','expireat','get','getset',
                'zremrangebyscore','zrevrange','zrevrangebyscore','zrevrank',
                'zscore','zscan'];
 
-_.map(methods, function (method) {
+methods.map(function (method) {
   Redis.prototype[method] = function (method) {
     return function () {
       var key = arguments[0];
@@ -146,3 +161,4 @@ _.map(methods, function (method) {
 module.exports = function (config) {
   return new Redis(config);
 };
+
