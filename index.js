@@ -131,7 +131,7 @@ Redis.prototype._getTotalWeight = function (servers) {
 //
 var methods = ['del','dump','exists','expire','expireat','get','getset',
                'persist','pexpire','pttl','rename','renamenx','restore',
-               'sort','ttl','type','incrby','incrbyfloat','psetex','set',
+               'sort','ttl','type','incr', 'incrby','incrbyfloat','psetex','set',
                'setbit','setex','setnx','setrange','strlen','hdel','hexists',
                'hget','hgetall','hincrby','hincrbyfloat','hkeys','hlen','hset',
                'hvals','hmset','hmget','hscan','lindex','linsert','llen','lpop','lpush',
